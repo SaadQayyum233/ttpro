@@ -1,0 +1,11 @@
+"id","user_id","type","name","description","provider","endpoint_token","secret_key","event_handling","notification_email","trigger_event","target_url","http_method","headers","selected_fields","payload_template","is_active","last_triggered","created_at","updated_at"
+"1","1","incoming","Get Contact","","custom","49c1493ea43d947bf516d4ea50f2eaef95f5e12be79d36206b60cc1607995975",,"",,,,,"[object Object]","",,"true",,2025-04-06T23:18:02.042Z,2025-04-06T23:18:02.042Z
+"2","1","outgoing","Test","","custom",,,"",,"contact_updated","https://webhook.site/3cb601c8-2910-40d1-91fd-8d2c3269ef32","POST","[object Object]","contact_email,contact_name,contact_id","{
+  ""event_type"": ""{event.type}"",
+  ""timestamp"": ""{event.timestamp}"",
+  ""data"": {
+    ""contact_id"": ""{contact.id}"",
+    ""email"": ""{contact.email}"",
+    ""name"": ""{contact.name}""
+  }
+}","true",,2025-04-07T05:01:59.007Z,2025-04-07T05:01:59.007Z

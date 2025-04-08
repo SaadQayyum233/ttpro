@@ -1,0 +1,121 @@
+II. Outgoing Webhook (id=2) Troubleshooting
+
+This webhook should fire when a contact_updated event happens inside your SaaS application, sending data to webhook.site.
+
+Trigger Logic:
+
+Problem: Your application code needs to detect when a contact is updated. Where does this happen? (e.g., after a database save operation).
+
+Action: Implement the code logic that identifies the contact_updated event.
+
+Sending Logic:
+
+Problem: After detecting the event, your code needs to actually make the HTTP POST request.
+
+Action:
+
+Use an HTTP client library suitable for your language (e.g., requests in Python, axios or node-fetch in Node.js).
+
+Inside the event handler (where contact_updated is detected):
+
+Retrieve the relevant contact data (contact_email, contact_name, contact_id).
+
+Fetch the webhook configuration (URL, method, payload template, headers) for active webhooks triggered by contact_updated.
+
+Format the payload_template by replacing placeholders ({event.type}, {contact.id}, etc.) with actual data.
+
+Parse the headers field. [object Object] is not valid JSON/header format in the CSV. It should likely represent JSON headers like {"Content-Type": "application/json"}. Your code needs to construct a proper header dictionary/object. If no specific headers are needed beyond Content-Type, ensure your HTTP client sends Content-Type: application/json if your payload is JSON.
+
+Make the HTTP POST request to the target_url (https://webhook.site/3cb601c8-2910-40d1-91fd-8d2c3269ef32) with the formatted payload and headers.
+
+Error Handling & Logging:
+
+Problem: If the request fails (network error, webhook.site error), you won't know why.
+
+Action: Add logging within your sending logic. Log the constructed payload, headers, target URL, and any success or error responses from the HTTP request. Check the Replit console for these logs.
+
+Testing Connectivity:
+
+Action: Open the "Shell" tab in your Replit workspace and test basic connectivity:
+
+curl -X POST -H "Content-Type: application/json" -d '{"test": "hello"}' https://webhook.site/3cb601c8-2910-40d1-91fd-8d2c3269ef32
+Use code with caution.
+Bash
+Check webhook.site to see if this manual request arrives. If it does, the network path from Replit is open. The issue is likely in your application's trigger or sending logic.
+
+III. Incoming Webhook (id=1) Troubleshooting
+
+This webhook expects an external service to send data to your SaaS application running on Replit.
+
+Endpoint Definition:
+
+Problem: The CSV defines an endpoint_token but doesn't specify the URL path on your application where requests should be sent. An incoming webhook needs a specific URL to hit. The target_url is empty, which is correct for incoming, but your app needs to provide the URL.
+
+Action:
+
+Define a route in your web server framework. This URL should be unique and identifiable, often incorporating the endpoint_token to distinguish it. Example URL structure: https://your-repl-name.your-username.replit.dev/webhooks/incoming/custom/{endpoint_token} (replace {endpoint_token} with the actual token 49c14...).
+
+So, the full URL to give to the sending service would be: https://your-repl-name.your-username.replit.dev/webhooks/incoming/custom/49c1493ea43d947bf516d4ea50f2eaef95f5e12be79d36206b60cc1607995975
+
+Implement the handler function for this route in your application code.
+
+Request Handling Logic:
+
+Problem: When a request hits your defined endpoint, your application needs code to do something with it (the "Get Contact" action).
+
+Action: In the route handler function:
+
+Receive the incoming request (check method, headers, body).
+
+Parse the request body (likely JSON).
+
+Perform the action described by the webhook ("Get Contact" - what does this mean? Fetch contact data based on the payload? Log the incoming data?). Implement this logic.
+
+Send an appropriate HTTP response (e.g., 200 OK, 202 Accepted, or an error code).
+
+Authentication/Verification (Optional but Recommended):
+
+Problem: Anyone knowing the URL could potentially send data. The endpoint_token is public in the URL here. A secret_key (which is empty in your CSV) is often used for signature verification (e.g., HMAC-SHA256) to ensure the request came from the expected provider and wasn't tampered with.
+
+Action (Future): Consider adding a secret_key to your webhook configurations and implement signature verification in your endpoint handler if security is needed.
+
+Testing:
+
+Action:
+
+Ensure your Replit app is running and the web server is active.
+
+Use webhook.site (or curl, Postman) to send a request to your Replit webhook URL (the one you defined in step III.1).
+
+Example using curl from your local machine or another service:
+
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"some_key": "some_value", "contact_id_to_get": "123"}' \
+  https://your-repl-name.your-username.replit.dev/webhooks/incoming/custom/49c1493ea43d947bf516d4ea50f2eaef95f5e12be79d36206b60cc1607995975
+Use code with caution.
+Bash
+Check your application's logs in the Replit console to see if the request was received and processed, and look for any errors.
+
+IV. Configuration (webhooks.csv) Issues
+
+headers: [object Object]: This needs to be corrected in your CSV or handled by your application code. It should ideally be valid JSON string like "{\"Content-Type\":\"application/json\"}" or your code needs to know to default to standard headers if it sees this placeholder.
+
+Incoming Webhook Path: Your system needs a way to map the endpoint_token to a specific URL path within your application. This logic isn't defined by the CSV alone.
+
+Summary of Actions for Replit:
+
+Ensure App Runs: Verify your web application starts correctly in Replit and listens on 0.0.0.0:<port>.
+
+Implement Outgoing Logic: Write code that detects contact_updated, formats the payload, sets correct headers (e.g., Content-Type: application/json), and sends the POST request using an HTTP client library. Add extensive logging.
+
+Implement Incoming Logic: Define a route (URL path) in your web app incorporating the endpoint_token. Write handler code for that route to receive requests, parse them, perform the "Get Contact" action, and send a response. Add logging.
+
+Test Incoming URL: Construct the full public URL for your incoming webhook endpoint and test sending requests to it from webhook.site or curl.
+
+Consider "Always On": If incoming webhooks need to be reliable, enable "Always On" or use an external ping service.
+
+Check Logs: Constantly monitor your application's logs in the Replit console for errors during both sending and receiving webhook attempts.
+
+Correct Headers: Fix the [object Object] placeholder in your configuration or code.
+

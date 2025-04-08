@@ -1,0 +1,61 @@
+Thanks for implementing the outgoing webhook logic in the previous steps. You mentioned it was tested and working, and confirmed sending to webhook.site using curl commands.
+
+Problem: However, when I test through the application's actual user interface, the webhooks are still not arriving at https://webhook.site/3cb601c8-2910-40d1-91fd-8d2c3269ef32.
+
+Specifically:
+
+I deleted any old test webhooks.
+
+I created a new outgoing webhook configuration (details below, corresponding to id=4 in the latest webhooks (1).csv file).
+
+I then used the SaaS UI to create a new contact. No webhook was received at webhook.site.
+
+I also used the SaaS UI to update an existing contact. No webhook was received at webhook.site (though my primary test webhook id=4 is for contact_created).
+
+My Current Test Webhook Configuration (id=4):
+
+ID: 4
+
+Type: outgoing
+
+Trigger Event: contact_created
+
+Target URL: https://webhook.site/3cb601c8-2910-40d1-91fd-8d2c3269ef32
+
+HTTP Method: POST
+
+Payload Template: (Standard template from previous CSV)
+
+Is Active: true
+
+Request:
+
+Please help me debug why the webhook triggers aren't firing correctly when actions originate from the application's UI. I need you to:
+
+Verify Trigger Placement: Double-check the exact code paths in server/api/contactRoutes.ts (or wherever contact creation/updates initiated by the UI are handled). Ensure the call to the webhookService (e.g., webhookService.triggerOutgoingWebhook) is correctly placed after the database operation successfully completes for both contact creation and contact updates originating from UI requests.
+
+Check Event Matching: Confirm that when a contact is created, the service specifically looks for and finds active webhooks with trigger_event: 'contact_created' (like my id=4 webhook). Similarly, confirm that when a contact is updated, it looks for trigger_event: 'contact_updated'.
+
+Enhance Logging: Add more detailed logging inside the webhookService.ts functions (triggerOutgoingWebhook, sendWebhook, preparePayload, etc.). When a trigger event should occur (like after a contact is created/updated via the UI), the console logs should clearly show:
+
+The event type detected (e.g., "Detected event: contact_created").
+
+Which webhook configurations were found matching the event and is_active=true (e.g., "Found active webhooks for event: [4]").
+
+For each webhook being processed:
+
+The contact data being used.
+
+The final payload string after template substitution.
+
+The target URL being used.
+
+Confirmation that the HTTP request is about to be sent.
+
+The status code received from the webhook.site URL after sending.
+
+Any errors that occur during payload preparation or sending.
+
+Simulate UI Action (if possible) or Guide Me: If you can simulate a contact creation/update via the UI flow programmatically, please do so and check the logs. Otherwise, guide me on how to perform the action via the UI again, and then let's immediately check the Replit console logs for the detailed output requested in step 3.
+
+My goal is to see the detailed logs proving the webhook logic is being entered, the correct webhook config is found, the payload is built, and the request is sent (or identify precisely where it's failing) when I use the standard UI features."

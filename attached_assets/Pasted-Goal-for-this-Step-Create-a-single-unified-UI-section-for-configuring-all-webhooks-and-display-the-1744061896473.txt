@@ -1,0 +1,53 @@
+Goal for this Step: Create a single, unified UI section for configuring all webhooks and display them in a central table.
+
+Request:
+
+Consolidate UI:
+
+Remove the current separate "Configure Webhook" (Button 1 - Incoming/Outgoing) and "Custom Webhook" (Button 2) sections/buttons from the UI (/settings/integrations).
+
+Create a single new button/section, perhaps labeled "Manage Webhooks" or simply "Webhooks".
+
+Clicking this should lead to a page where users can click "Add New Webhook".
+
+Unified "Add/Edit Webhook" Form: This form should intelligently adapt based on the type of webhook being created/edited. It needs fields for:
+
+Webhook Name (Required)
+
+Description (Optional)
+
+Direction: A clear choice (e.g., Radio buttons, Dropdown) between "Incoming (Receive Data)" and "Outgoing (Send Data)". The rest of the form should adapt based on this choice.
+
+(If Incoming):
+
+Your Webhook URL: Display the unique, automatically generated URL for this specific webhook (like the Custom Webhook section currently does, e.g., /api/webhooks/incoming/custom/{webhook_id}). Clarify that this endpoint primarily accepts POST requests, not GET.
+
+Authentication Method: Allow selection (e.g., "None", "Secret Key in Header").
+
+If "Secret Key": Provide a field to view/regenerate the secret key and specify the Header Name the sender must use (e.g., X-Webhook-Secret, Authorization).
+
+Payload Mapping: Implement the JSON mapping feature (like in the current "Custom Webhook") to map fields from the incoming payload (e.g., data.contact.email) to your internal SaaS fields (e.g., email).
+
+(If Outgoing):
+
+Trigger Event: Dropdown to select the event within the SaaS that triggers this webhook (e.g., contact_created, contact_updated, etc. - use the existing list).
+
+Target URL: Field for the external URL to send data to.
+
+HTTP Method: Dropdown (POST, GET, PUT, DELETE, etc.).
+
+Headers: Section to add/remove custom HTTP headers (Key-Value pairs) to be sent with the request (like the current Outgoing section).
+
+Payload Builder/Template: Include the payload template editor and the list of available data fields/variables (like the current Outgoing section). Ensure all relevant fields are available.
+
+Is Active: A toggle switch to enable/disable the webhook.
+
+Implement Webhook Table View:
+
+On the main "Manage Webhooks" page (before clicking "Add New Webhook"), display a table listing all configured webhooks (both incoming and outgoing).
+
+Table Columns: Include columns for: Name, Direction (Incoming/Outgoing), Trigger Event (for Outgoing) / Endpoint URL (for Incoming), Target URL (for Outgoing), Status (Active/Inactive), Actions (Edit, Delete, maybe a "Test" button later).
+
+Backend Storage: Ensure the backend database schema (webhooks table) can store all these configuration options for both incoming and outgoing types cleanly. You might need to add columns for direction, payload_mapping (JSON/text), authentication_method, header_name, etc.
+
+Focus: For this step, prioritize restructuring the UI, creating the unified form structure, implementing the table view (reading from the database), and ensuring the database schema supports the unified model. We will fix the underlying functional issues (like GHL errors, full payload sending) in the next steps after this foundation is built."

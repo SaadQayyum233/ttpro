@@ -1,0 +1,58 @@
+"Hi Replit,
+
+I have a SaaS application running in this Repl. I'm trying to implement an outgoing webhook based on the following configuration (from my webhooks.csv):
+
+ID: 2
+
+Type: outgoing
+
+Trigger Event: contact_updated
+
+Target URL: https://webhook.site/3cb601c8-2910-40d1-91fd-8d2c3269ef32
+
+HTTP Method: POST
+
+Selected Fields: contact_email, contact_name, contact_id
+
+Payload Template:
+
+{
+  "event_type": "{event.type}",
+  "timestamp": "{event.timestamp}",
+  "data": {
+    "contact_id": "{contact.id}",
+    "email": "{contact.email}",
+    "name": "{contact.name}"
+  }
+}
+Use code with caution.
+Json
+Headers: [object Object] (This seems incorrect, please assume standard Content-Type: application/json headers unless other specific headers are required based on the payload).
+
+Is Active: true
+
+Problem: This webhook is not currently sending any data to the target URL when I update a contact in my application.
+
+Request:
+
+Please help me implement the necessary logic within my application code ([mention your primary language/framework, e.g., Python/Flask, Node.js/Express]) to make this outgoing webhook work. Specifically, I need assistance with:
+
+Triggering: Show me where and how in my code I should detect the contact_updated event (e.g., after a successful database update of a contact record). I need to know where to put the webhook sending logic.
+
+Data Gathering: How to retrieve the contact_id, contact_name, and contact_email of the specific contact that was just updated.
+
+Payload Construction: How to dynamically format the payload_template string, replacing {event.type} with contact_updated, {event.timestamp} with the current timestamp, and {contact.id}, {contact.email}, {contact.name} with the actual data gathered in step 2.
+
+Sending the Request: Provide code using a standard HTTP client library (like requests for Python or axios/node-fetch for Node.js) to send the constructed JSON payload via POST to the target_url (https://webhook.site/3cb601c8-2910-40d1-91fd-8d2c3269ef32), ensuring the Content-Type: application/json header is set.
+
+Logging: Include basic logging (printing to the Replit console) to show:
+
+That the webhook trigger fired.
+
+The final payload being sent.
+
+The target URL.
+
+The success or failure status/response code from webhook.site.
+
+My goal is to see the data appear on https://webhook.site/3cb601c8-2910-40d1-91fd-8d2c3269ef32 whenever I update a contact within my running Replit application."
